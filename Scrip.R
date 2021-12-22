@@ -143,8 +143,17 @@ Galapagos %>% relocate(Station:Island)
 ```{r}
 Galapagos %>% summarise(distance = mean(distance, na.rm = TRUE))
 ``` 
-  
-  
-  
-  
-  
+
+10. Si queremos ver una columna en concreto debemos poner en corchetes el número de columna que es
+
+```{r}
+Galapagos[1]
+``` 
+
+11. Para ver una casilla concreta primero seleccioanmso la fila y después la columna.
+
+```{r}
+Galapagos[1,3]
+```   
+
+
