@@ -1,0 +1,271 @@
+---
+title: "Recuperación primer parcial prácticas de Fuentes de datos"
+author: "Julia Usón Zuazo"
+date: "Diciembre 2021"
+output:
+  html_document: default
+  pdf_document: default
+  
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Introduccion
+  
+En este proyecto vamos a trabajar los contenidos que entraban en el primer parcial de prácticas de la asignatura trabajaremos 
+los verbos de `dplyr`. Todos los verbos los voy a probar con el paquete starwars y con la base datos Galapagos_summary.
+Para realizar esto seguiremos los manuales "Vignettes".
+
+Lo primero que tenemos que hacer es cargar los paquetes que utilizaremos en nuestro proyecto:
+
+```{r}
+library(dplyr)
+library(readr)
+```
+Seguido vamos a importar el set de datos que vamos a usar:
+
+
+```{r}
+Galapagos <- read_csv("DATA/Galapagos_summary.csv")
+View(Galapagos)
+```
+
+## Trabajo con los verbos del paquete dyply:
+
+```{r}
+vignette("dplyr")
+```
+Utilizamos vignette() para conocer mejor los paquetes que vamos a utilizar y sus posibilidades.
+
+#### 1. Utilizamos dim() para conocer la dimension del set de datos con el que vamos a trabajar.
+
+```{r}
+dim(Galapagos)
+```
+El set de datos Galapagostiene 48 filas y 6 columnas.
+
+
+
+#### 2. Funcion filter(), la utilizamos para que se nos muestre la fila con un dato o datos concretos dentro de una columna.
+
+```{r}
+Galapagos %>% filter(Island == "Santa Cruz")
+```
+
+Este comando nos mostrar? ?nicamente los datos que corresponde a la isla Santa Cruz.
+
+Podemos seleccionar m?s de una caracter?stica en concreto:
+
+```{r}
+Galapagos %>% filter(Island == "Santa Cruz", Station == "East")
+```
+
+
+#### 3. Utilizamos arrange() cuya funcion es reordenar, es decir, nosotros seleccionamos unas columna y las filas se ordenan en funcion
+del menor al mayor valor de la columna elegida.
+
+```{r}
+Galapagos %>% arrange(Av_Temp)
+```
+
+
+Para que el orden de las filas sea inverso, es decir, ordenando el valor de la columna elegida de mayor a menor utilizamos desc()
+
+```{r}
+Galapagos %>% arrange(desc(Av_Salinity))
+```
+
+
+#### 4. slice() sirve para seleccionar columnas y trabajar con ellas de manera mas sencilla.
+
+Nuestro set de datos tiene 48 si queremos ver las filas de la 13 a la 27 debemos utilizar el siguiente comando:
+
+```{r}
+Galapagos %>% slice(13:27)
+```
+
+
+slice() tambien nos sirve para selecionar las x primeras o x ultimas filas pero modificando ligeramente el conditionMessage.condition(
+
+Seleccion 5 primeras filas:
+
+```{r}
+Galapagos %>% slice_head(n=5)
+```
+
+
+Seleccion 5 últimas filas:
+
+```{r}
+Galapagos %>% slice_tail(n=5)
+```
+
+
+Otra aplicaciÓn interesante de slice es slice_sample() que sirve para seleccionar un n?mero determiando de filas al azar:
+
+```{r}
+Galapagos %>% slice_sample(n=5)
+```
+
+Tambien podemos ordenar en función del que destaque mas o menos de en una caracteristica, por ejemplo, ordenamos en funcion
+de la temperatura mas alta:
+  
+```{r}
+Galapagos %>% slice_max(Av_Temp)
+```
+
+Ahora temperatura mas baja:
+  
+```{r}
+Galapagos %>% slice_min(Av_Temp)
+   
+```
+
+#### 5. select() se utiliza para que se nos muestre solo las columnas que nos interesan:
+
+```{r}
+Galapagos %>% select(Island, Station, distance)
+```
+
+#### 6. El paquete dyplr tambien nos ofrece la posibilidad de cambiar los nombres de las columnas. 
+
+```{r}
+Galapagos %>% rename(Isla = Island)
+ 
+
+Galapagos %>% rename(Isla = Island, Orientacion = Station, distancia = distance)
+```
+
+  
+#### 7. Una de las funciones mas interesantes de este paquete es mutate() que nos sirve para crear nuevas columnas en funcion de otras.
+
+En este caso vamos a añadir una columna que se llame temperatura_F (T? en Fahrenheit) a partir de la columna Av_Temp.
+
+Para pasar de ºC a ºF: ºC*9/5+32
+
+```{r}
+Galapagos %>% mutate(temperatura_f = (Av_Temp*9/5)+32)
+```
+
+
+#### 8. Para cambiar el orden de las columnas utilizamos relocate()
+
+La primera columna es Islan pero queremos que sea Station, para ello:
+
+```{r}
+Galapagos %>% relocate(Station:Island)
+```
+
+
+#### 9. Si queremos la media de los valores de una columna numérica utilizamos summarise()
+  
+```{r}
+Galapagos %>% summarise(distance = mean(distance, na.rm = TRUE))
+```
+
+#### 10. Si queremos ver una columna en concreto debemos poner en corchetes el número de columna que es
+
+```{r}
+Galapagos[1]
+```
+
+
+#### 11. Para ver una casilla concreta primero seleccionamos la fila y después la columna.
+
+```{r}
+Galapagos[1,3]
+```
+
+
+
+## GRÁFICO
+
+```{r}
+library(ggplot2)
+```
+  
+
+Vamos a crear un gráfico con la temperatura media de cada isla. Para ello tenemos que cogerlos 12 valores de tempratura de cada isla y hacerla media:
+
+  1. Isla PINZÓN
+    
+```{r}
+
+Isla_Pinzón<-Galapagos %>% filter(Island == "Pinzón")
+
+Isla_Pinzón %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE))
+```
+
+
+  2. Isla SANTA CRUZ
+
+```{r}
+
+Isla_Santa_Cruz<-Galapagos %>% filter(Island == "Santa Cruz")
+
+Isla_Santa_Cruz %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE))
+```
+
+
+  3. Isla SANTA FÉ
+
+```{r}
+
+Isla_Santa_Fe<-Galapagos %>% filter(Island == "Santa Fé")
+
+Isla_Santa_Fe %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE))
+```
+
+
+  4. Isla SEYMOUR:
+
+```{r}
+
+Isla_Seymour<-Galapagos %>% filter(Island == "Seymour")
+
+
+Isla_Seymour %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE))
+```
+
+
+Ahora creamos un data.frame con estos datos:
+
+1.Vector de las islas. 
+
+```{r}
+ISLAS <- c("Pinzón","Santa Cruz","Santa Fé", "Seymour")
+```
+
+2. Vector temperatura media de cada isla
+
+```{r}
+TEMPERATURA_MEDIA <- c(Isla_Pinzón %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE)),Isla_Santa_Cruz %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE)),Isla_Santa_Fe %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE)),Isla_Seymour %>% summarise(Av_Temp = mean(Av_Temp, na.rm = TRUE)))
+```
+
+3. Data frame a partir del vector creado con la temperatura media de cada isla.
+
+```{r}
+Valores_T_media = data.frame(cbind(TEMPERATURA_MEDIA))
+```
+
+3. DATA FRAME DE LA TEMPERATURA MEDIA DE CADA ISLA
+
+```{r}
+Tabla_Isla_temperatura = data.frame(cbind(ISLAS, Valores_T_media))
+```
+
+
+4. GRÁFICO
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+ggplot(data = Tabla_Isla_temperatura, aes(x = `ISLAS`, y = `TEMPERATURA_MEDIA`)) +  geom_bar(stat="identity", position="stack", fill="purple", show.legend = TRUE) + ggtitle("Islas-temperaturas medias")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=0.5))
+```
+
+
+
+
+
